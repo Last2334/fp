@@ -318,6 +318,10 @@
                 resultEl.textContent = result.visitorId;
                 resultEl.className = 'success';
                 
+                // 设置全局变量供自动化浏览器使用
+                window.fingerprintId = result.visitorId;
+                window.fingerprintReady = true;
+                
                 // 切换显示
                 loadingEl.style.display = 'none';
                 resultContainerEl.style.display = 'block';
