@@ -2,333 +2,56 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>浏览器指纹获取工具</title>
-    <meta name="description" content="使用 FingerprintJS 获取浏览器唯一指纹标识">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            color: #333;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 800px;
-            width: 100%;
-            margin-top: 20px;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        h1 {
-            color: #333;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-        
-        .subtitle {
-            color: #666;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-        
-        .fingerprint-section {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .loading {
-            display: inline-block;
-            color: #666;
-            font-size: 1.2rem;
-        }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        #result {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-            word-break: break-all;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border: 2px solid #e9ecef;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .error {
-            color: #dc3545;
-            background: #f8d7da;
-            border-color: #f5c6cb;
-        }
-        
-        .success {
-            color: #155724;
-            background: #d4edda;
-            border-color: #c3e6cb;
-        }
-        
-        .info-section {
-            margin-top: 30px;
-        }
-        
-        .info-card {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .info-card h3 {
-            color: #495057;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
-        
-        .info-card p {
-            color: #6c757d;
-            line-height: 1.6;
-        }
-        
-        .button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            margin: 10px;
-        }
-        
-        .button:hover {
-            background: #5a6fd8;
-        }
-        
-        .button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .details-section {
-            margin-top: 20px;
-            text-align: left;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-            display: none;
-        }
-        
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .detail-item {
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
-        
-        .detail-label {
-            font-weight: bold;
-            color: #495057;
-            margin-bottom: 5px;
-        }
-        
-        .detail-value {
-            color: #6c757d;
-            word-break: break-all;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-        }
-        
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            color: white;
-            font-size: 0.9rem;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .details-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🔍 浏览器指纹获取工具</h1>
-            <p class="subtitle">基于 FingerprintJS 的浏览器唯一标识生成器</p>
-        </header>
-        
-        <main>
-            <section class="fingerprint-section">
-                <div id="loading" class="loading">
-                    <div class="spinner"></div>
-                    <p>正在生成浏览器指纹...</p>
-                </div>
-                
-                <div id="result-container" style="display: none;">
-                    <p>您的浏览器指纹 ID：</p>
-                    <div id="result"></div>
-                </div>
-            </section>
-            
-            <section class="info-section">
-                <div class="info-card">
-                    <h3>📌 什么是浏览器指纹？</h3>
-                    <p>浏览器指纹是一种通过收集浏览器和设备的各种特征信息（如用户代理、屏幕分辨率、安装的字体、插件等）来生成唯一标识符的技术。即使删除 Cookie，浏览器指纹通常仍然保持不变。</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>🔒 隐私说明</h3>
-                    <p>本工具仅在您的本地浏览器中生成指纹，不会将任何数据发送到服务器。所有计算都在您的设备上完成，确保您的隐私安全。</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>⚙️ 技术实现</h3>
-                    <p>本工具使用 <a href="https://fingerprintjs.com/" target="_blank" style="color: #667eea;">FingerprintJS</a> 开源库，通过分析浏览器的多种特征来生成高熵的指纹标识符。</p>
-                </div>
-            </section>
-            
-        </main>
-    </div>
-    
-    <footer>
-        <p>© 2024 浏览器指纹获取工具 | 基于 FingerprintJS 开源项目</p>
-    </footer>
 
-    <!-- FingerprintJS v5 优化加载 -->
     <script>
-        // 全局变量存储指纹结果
-        let fingerprintResult = null;
-        let fpPromise = null;
-        
-        // 加载 FingerprintJS v5（使用 jsdelivr CDN）
+        // 加载 FingerprintJS
         async function loadFingerprintJS() {
-            if (fpPromise) return fpPromise;
-            
-            console.log('使用 jsdelivr CDN 加载 FingerprintJS v5');
-            
-            // 使用 script 标签加载，然后使用全局 FingerprintJS
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@5/dist/fp.js';
             
-            fpPromise = new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 script.onload = () => {
-                    // 脚本加载后，FingerprintJS 应该在全局作用域中
                     if (window.FingerprintJS) {
                         resolve(window.FingerprintJS.load());
                     } else {
-                        reject(new Error('FingerprintJS 未正确加载到全局作用域'));
+                        reject(new Error('FingerprintJS 未正确加载'));
                     }
                 };
                 script.onerror = () => reject(new Error('FingerprintJS 脚本加载失败'));
+                document.head.appendChild(script);
             });
-            
-            document.head.appendChild(script);
-            return fpPromise;
         }
         
         // 生成浏览器指纹
-        async function generateFingerprint() {
-            const loadingEl = document.getElementById('loading');
-            const resultContainerEl = document.getElementById('result-container');
-            
-            // 显示加载状态
-            loadingEl.style.display = 'block';
-            resultContainerEl.style.display = 'none';
-            
+        async function getFingerprint() {
             try {
-                // 加载 FingerprintJS
                 const fp = await loadFingerprintJS();
-                
-                // 获取指纹
                 const result = await fp.get();
-                fingerprintResult = result;
                 
-                // 显示结果
-                const resultEl = document.getElementById('result');
-                resultEl.textContent = result.visitorId;
-                resultEl.className = 'success';
+                // 指纹生成成功后创建结果元素
+                const resultDiv = document.createElement('div');
+                resultDiv.id = 'fingerprint-result';
+                resultDiv.textContent = result.visitorId;
+                document.body.appendChild(resultDiv);
                 
-                // 切换显示
-                loadingEl.style.display = 'none';
-                resultContainerEl.style.display = 'block';
-                
-                console.log('Fingerprint generated:', result);
+                console.log('Fingerprint:', result.visitorId);
                 
             } catch (error) {
-                console.error('Error generating fingerprint:', error);
+                console.error('Error:', error);
                 
-                // 显示错误
-                const resultEl = document.getElementById('result');
-                resultEl.textContent = '错误: ' + (error.message || error);
-                resultEl.className = 'error';
-                
-                // 切换显示
-                loadingEl.style.display = 'none';
-                resultContainerEl.style.display = 'block';
-                
-                // 为自动化测试设置属性
-                document.body.setAttribute('data-status', 'error');
+                // 创建错误元素
+                const errorDiv = document.createElement('div');
+                errorDiv.id = 'fingerprint-error';
+                errorDiv.textContent = error.message;
+                document.body.appendChild(errorDiv);
             }
         }
         
         // 页面加载时自动生成指纹
-        window.addEventListener('load', generateFingerprint);
+        window.addEventListener('load', getFingerprint);
     </script>
 </body>
 </html>
