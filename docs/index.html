@@ -256,42 +256,36 @@
         <p>© 2024 浏览器指纹获取工具 | 基于 FingerprintJS 开源项目</p>
     </footer>
 
-    <!-- FingerprintJS v5 统一兼容加载 -->
+    <!-- FingerprintJS v5 优化加载 -->
     <script>
         // 全局变量存储指纹结果
         let fingerprintResult = null;
         let fpPromise = null;
         
-        // 加载 FingerprintJS v5（统一兼容方式）
+        // 加载 FingerprintJS v5（使用 jsdelivr CDN）
         async function loadFingerprintJS() {
             if (fpPromise) return fpPromise;
             
-            try {
-                console.log('使用兼容模式加载 FingerprintJS v5');
-                
-                // 动态创建 script 标签
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@5/dist/fp.js';
-                script.type = 'module';
-                
-                fpPromise = new Promise((resolve, reject) => {
-                    script.onload = async () => {
-                        try {
-                            const FingerprintJS = await import('https://openfpcdn.io/fingerprintjs/v5');
-                            resolve(FingerprintJS.load());
-                        } catch (e) {
-                            reject(e);
-                        }
-                    };
-                    script.onerror = () => reject(new Error('Failed to load FingerprintJS'));
-                });
-                
-                document.head.appendChild(script);
-                return fpPromise;
-            } catch (error) {
-                console.error('加载 FingerprintJS 失败:', error);
-                throw error;
-            }
+            console.log('使用 jsdelivr CDN 加载 FingerprintJS v5');
+            
+            // 使用 script 标签加载，然后使用全局 FingerprintJS
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@5/dist/fp.js';
+            
+            fpPromise = new Promise((resolve, reject) => {
+                script.onload = () => {
+                    // 脚本加载后，FingerprintJS 应该在全局作用域中
+                    if (window.FingerprintJS) {
+                        resolve(window.FingerprintJS.load());
+                    } else {
+                        reject(new Error('FingerprintJS 未正确加载到全局作用域'));
+                    }
+                };
+                script.onerror = () => reject(new Error('FingerprintJS 脚本加载失败'));
+            });
+            
+            document.head.appendChild(script);
+            return fpPromise;
         }
         
         // 生成浏览器指纹
