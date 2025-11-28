@@ -223,8 +223,6 @@
                 <div id="result-container" style="display: none;">
                     <p>您的浏览器指纹 ID：</p>
                     <div id="result"></div>
-                    <button id="refresh-btn" class="button">重新生成</button>
-                    <button id="details-btn" class="button">查看详细信息</button>
                 </div>
             </section>
             
@@ -245,10 +243,6 @@
                 </div>
             </section>
             
-            <section id="details-section" class="details-section">
-                <h3>指纹详细信息</h3>
-                <div id="details-content" class="details-grid"></div>
-            </section>
         </main>
     </div>
     
@@ -292,12 +286,10 @@
         async function generateFingerprint() {
             const loadingEl = document.getElementById('loading');
             const resultContainerEl = document.getElementById('result-container');
-            const detailsSectionEl = document.getElementById('details-section');
             
             // 显示加载状态
             loadingEl.style.display = 'block';
             resultContainerEl.style.display = 'none';
-            detailsSectionEl.style.display = 'none';
             
             try {
                 // 加载 FingerprintJS
@@ -312,17 +304,9 @@
                 resultEl.textContent = result.visitorId;
                 resultEl.className = 'success';
                 
-                // 设置全局变量供自动化浏览器使用
-                window.fingerprintId = result.visitorId;
-                window.fingerprintReady = true;
-                
                 // 切换显示
                 loadingEl.style.display = 'none';
                 resultContainerEl.style.display = 'block';
-                
-                // 为自动化测试设置属性
-                document.body.setAttribute('data-visitor-id', result.visitorId);
-                document.body.setAttribute('data-status', 'done');
                 
                 console.log('Fingerprint generated:', result);
                 
@@ -342,64 +326,6 @@
                 document.body.setAttribute('data-status', 'error');
             }
         }
-        
-        // 显示详细信息
-        function showDetails() {
-            if (!fingerprintResult) return;
-            
-            const detailsSectionEl = document.getElementById('details-section');
-            const detailsContentEl = document.getElementById('details-content');
-            
-            // 清空之前的内容
-            detailsContentEl.innerHTML = '';
-            
-            // 创建详细信息项
-            const details = [
-                { label: '访问者 ID', value: fingerprintResult.visitorId },
-                { label: '置信度', value: fingerprintResult.confidence.score },
-                { label: '组件数量', value: Object.keys(fingerprintResult.components).length }
-            ];
-            
-            // 添加一些组件信息
-            const componentsToShow = ['userAgent', 'language', 'colorDepth', 'deviceMemory', 'hardwareConcurrency', 'screenResolution', 'timezone'];
-            componentsToShow.forEach(component => {
-                if (fingerprintResult.components[component]) {
-                    const value = fingerprintResult.components[component].value;
-                    details.push({
-                        label: component,
-                        value: typeof value === 'object' ? JSON.stringify(value) : value
-                    });
-                }
-            });
-            
-            // 创建 DOM 元素
-            details.forEach(detail => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'detail-item';
-                
-                const labelEl = document.createElement('div');
-                labelEl.className = 'detail-label';
-                labelEl.textContent = detail.label;
-                
-                const valueEl = document.createElement('div');
-                valueEl.className = 'detail-value';
-                valueEl.textContent = detail.value;
-                
-                itemEl.appendChild(labelEl);
-                itemEl.appendChild(valueEl);
-                detailsContentEl.appendChild(itemEl);
-            });
-            
-            // 显示详细信息区域
-            detailsSectionEl.style.display = 'block';
-            
-            // 滚动到详细信息区域
-            detailsSectionEl.scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        // 事件监听器
-        document.getElementById('refresh-btn').addEventListener('click', generateFingerprint);
-        document.getElementById('details-btn').addEventListener('click', showDetails);
         
         // 页面加载时自动生成指纹
         window.addEventListener('load', generateFingerprint);
