@@ -256,12 +256,43 @@
         <p>© 2024 浏览器指纹获取工具 | 基于 FingerprintJS 开源项目</p>
     </footer>
 
-    <!-- 使用 CDN 加载 FingerprintJS -->
-    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-    
+    <!-- FingerprintJS v5 统一兼容加载 -->
     <script>
         // 全局变量存储指纹结果
         let fingerprintResult = null;
+        let fpPromise = null;
+        
+        // 加载 FingerprintJS v5（统一兼容方式）
+        async function loadFingerprintJS() {
+            if (fpPromise) return fpPromise;
+            
+            try {
+                console.log('使用兼容模式加载 FingerprintJS v5');
+                
+                // 动态创建 script 标签
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@5/dist/fp.js';
+                script.type = 'module';
+                
+                fpPromise = new Promise((resolve, reject) => {
+                    script.onload = async () => {
+                        try {
+                            const FingerprintJS = await import('https://openfpcdn.io/fingerprintjs/v5');
+                            resolve(FingerprintJS.load());
+                        } catch (e) {
+                            reject(e);
+                        }
+                    };
+                    script.onerror = () => reject(new Error('Failed to load FingerprintJS'));
+                });
+                
+                document.head.appendChild(script);
+                return fpPromise;
+            } catch (error) {
+                console.error('加载 FingerprintJS 失败:', error);
+                throw error;
+            }
+        }
         
         // 生成浏览器指纹
         async function generateFingerprint() {
@@ -276,7 +307,7 @@
             
             try {
                 // 加载 FingerprintJS
-                const fp = await FingerprintJS.load();
+                const fp = await loadFingerprintJS();
                 
                 // 获取指纹
                 const result = await fp.get();
