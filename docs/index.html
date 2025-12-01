@@ -31,6 +31,9 @@
                 const fp = await loadFingerprintJS();
                 const result = await fp.get();
                 
+                // 将完整结果暴露到全局变量
+                window.fingerprintResult = result;
+                
                 // 指纹生成成功后创建结果元素
                 const resultDiv = document.createElement('div');
                 resultDiv.id = 'fingerprint-result';
