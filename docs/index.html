@@ -40,7 +40,12 @@
                 resultDiv.textContent = result.visitorId;
                 document.body.appendChild(resultDiv);
                 
-                console.log('Fingerprint:', result.visitorId);
+                // 创建隐藏元素保存完整指纹数据
+                const fullResultDiv = document.createElement('div');
+                fullResultDiv.id = 'fingerprint-full-result';
+                fullResultDiv.style.display = 'none';
+                fullResultDiv.textContent = JSON.stringify(result);
+                document.body.appendChild(fullResultDiv);
                 
             } catch (error) {
                 console.error('Error:', error);
